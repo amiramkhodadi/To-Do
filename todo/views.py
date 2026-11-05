@@ -56,3 +56,24 @@ def todo(request):
 def signout(request):
     logout(request)
     return redirect("/loginn")
+
+
+@login_required(login_url="/loginn")
+def edit_todo(request, srno):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        print(title)
+        obj = TODOO.objects.get(srno=srno)
+        obj.title = title
+        obj.save()
+        return redirect("/todopage")
+
+    obj = TODOO.objects.get(srno=srno)
+    return render(request, "edit_todo.html", {"obj": obj})
+
+
+def delete_todo(request, srno):
+    print(srno)
+    obj = TODOO.objects.get(srno=srno)
+    obj.delete()
+    return redirect("/todopage")
