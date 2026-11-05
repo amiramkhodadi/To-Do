@@ -31,3 +31,10 @@ def loginn(request):
             return redirect("loginn")
 
     return render(request, "todo/loginn.html", {})
+
+
+def todo(request):
+    if request.method == "POST":
+        title = request.POST.get("title")
+        obj = TODOO(title=title, user=request.user).save()
+    return render(request, "todo/todo.html", {})
