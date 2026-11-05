@@ -12,7 +12,6 @@ def signup(request):
         firstname = request.POST.get("fnm")
         email = request.POST.get("email")
         password = request.POST.get("pwd")
-        # print(firstname, password, email)
         user = User.objects.create_user(firstname, email, password).save()
         return redirect("loginn")
 
@@ -23,7 +22,6 @@ def loginn(request):
     if request.method == "POST":
         firstname = request.POST.get("fnm")
         password = request.POST.get("pwd")
-        print(firstname, password)
         user = authenticate(request, username=firstname, password=password)
         if user is not None:
             login(request, user)
@@ -62,18 +60,17 @@ def signout(request):
 def edit_todo(request, srno):
     if request.method == "POST":
         title = request.POST.get("title")
-        print(title)
         obj = TODOO.objects.get(srno=srno)
         obj.title = title
         obj.save()
         return redirect("/todopage")
 
     obj = TODOO.objects.get(srno=srno)
-    return render(request, "edit_todo.html", {"obj": obj})
+    return render(request, "todo/edit_todo.html", {"obj": obj})
 
 
+@login_required(login_url="/loginn")
 def delete_todo(request, srno):
-    print(srno)
     obj = TODOO.objects.get(srno=srno)
     obj.delete()
     return redirect("/todopage")
