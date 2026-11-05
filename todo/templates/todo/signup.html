@@ -1,14 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <title>Signup</title>
         <link rel="stylesheet" href="{% static 'css/index.css' %}" />
         <link rel="stylesheet"
               href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" />
-        <link rel="stylesheet"
-              href="https://fonts.googleapis.com/css2?family=Font Awesome 5 Brands:wght@400&display=swap" />
     </head>
     <body>
         <div class="signup-login">
@@ -17,21 +16,35 @@
                     {% csrf_token %}
                     <div class="heading">SignUp</div>
                     <div class="line"></div>
+                    {% if messages %}
+                        <div class="field">
+                            {% for message in messages %}
+                                <p style="color: {% if message.tags == 'success' %}green{% else %}red{% endif %}">
+                                    {{ message }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="field">
                         <b>Username</b>
                         <input class="inp"
                                type="text"
                                name="fnm"
+                               value="{{ fnm|default:'' }}"
                                required
-                               placeholder="Enter Your Full Name">
+                               maxlength="150"
+                               autocomplete="username"
+                               placeholder="Enter Your Username">
                     </div>
                     <div class="field">
                         <b>Email</b>
                         <input class="inp"
                                type="email"
-                               name="emailid"
+                               name="email"
+                               value="{{ email|default:'' }}"
                                required
-                               placeholder="Enter Your Username">
+                               autocomplete="email"
+                               placeholder="Enter Your Email">
                     </div>
                     <div class="field">
                         <b>Password</b>
@@ -39,16 +52,26 @@
                                type="password"
                                name="pwd"
                                required
+                               autocomplete="new-password"
                                placeholder="Enter Password">
                     </div>
                     <div class="field">
-                        <input class="submit-button"type="submit" value="Signup">
+                        <b>Confirm Password</b>
+                        <input class="inp"
+                               type="password"
+                               name="pwd2"
+                               required
+                               autocomplete="new-password"
+                               placeholder="Repeat Password">
+                    </div>
+                    <div class="field">
+                        <input class="submit-button" type="submit" value="Signup">
                     </div>
                     <div class="line"></div>
                     <div class="field">
                         <b style="margin-left:130px;">Already have an account?</b>
                         <br>
-                        <a class="anc"href="/loginn">Login</a>
+                        <a class="anc" href="{% url 'loginn' %}">Login</a>
                     </div>
                 </form>
             </div>
