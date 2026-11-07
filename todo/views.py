@@ -12,10 +12,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import TODOO
 
 TITLE_MAX_LENGTH = TODOO._meta.get_field("title").max_length
-
-# تا وقتی دکمه‌های حذف و خروج در template ها به فرم POST تبدیل نشده‌اند،
-# این گزینه را True نگه دارید تا لینک‌های قدیمی (GET) کار کنند.
-# بعد از اصلاح todo.html آن را False کنید (امن‌تر است).
 ALLOW_GET_FOR_DELETE_AND_LOGOUT = True
 
 
@@ -24,7 +20,6 @@ def _method_ok(request):
 
 
 def signup(request):
-    # کاربری که قبلاً وارد شده نیازی به ثبت‌نام ندارد
     if request.user.is_authenticated:
         return redirect("todo")
 
@@ -36,7 +31,6 @@ def signup(request):
             .lower()
         )
         password = request.POST.get("pwd") or ""
-        # فیلد تکرار رمز اختیاری است؛ اگر در template نبود بررسی نمی‌شود
         password2 = request.POST.get("pwd2")
 
         errors = []
@@ -61,7 +55,6 @@ def signup(request):
             if password2 is not None and password != password2:
                 errors.append("رمز عبور و تکرار آن یکسان نیستند.")
 
-            # user را هم می‌دهیم تا شباهت رمز به نام کاربری/ایمیل هم بررسی شود
             try:
                 validate_password(password, user=User(username=username, email=email))
             except ValidationError as e:
@@ -69,12 +62,10 @@ def signup(request):
 
         if not errors:
             try:
-                # create_user خودش ذخیره می‌کند؛ نیازی به save() نیست
                 User.objects.create_user(
                     username=username, email=email, password=password
                 )
             except IntegrityError:
-                # اگر هم‌زمان کس دیگری همین نام کاربری را گرفته باشد
                 errors.append("این نام کاربری قبلاً ثبت شده است.")
             else:
                 messages.success(request, "ثبت‌نام انجام شد. اکنون وارد شوید.")
@@ -83,8 +74,6 @@ def signup(request):
         for err in errors:
             messages.error(request, err)
 
-        # به جای redirect، صفحه را دوباره نمایش می‌دهیم تا ورودی‌ها پاک نشوند
-        # (رمز عبور عمداً برگردانده نمی‌شود)
         return render(request, "todo/signup.html", {"fnm": username, "email": email})
 
     return render(request, "todo/signup.html", {})
@@ -131,7 +120,6 @@ def signout(request):
 
 @login_required(login_url="loginn")
 def edit_todo(request, srno):
-    # فقط todo های خود کاربر قابل دسترسی است
     obj = get_object_or_404(TODOO, srno=srno, user=request.user)
 
     if request.method == "POST":
